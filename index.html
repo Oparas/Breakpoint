@@ -1,4 +1,3 @@
-<!-- Simple Movie Watching Website - HTML Version -->
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -6,126 +5,148 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Breakpoint</title>
   <style>
-    body { margin:0; font-family: Arial, sans-serif; background: #111; color: #eee; }
-    header { background: linear-gradient(to right, #4f46e5, #ec4899); padding: 1rem; text-align: center; }
-    h1 { margin:0; font-size: 1.8rem; }
-    main { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
-    .search { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
-    input, select, button { padding: 0.5rem; border-radius: 5px; border: none; }
-    .movies { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; }
-    .movie { background: #222; border-radius: 8px; overflow: hidden; }
-    .movie img { width: 100%; height: 250px; object-fit: cover; }
-    .movie-info { padding: 0.5rem; }
-    .movie-info h3 { margin:0; font-size: 1rem; }
-    .movie-info p { margin: 0.2rem 0; font-size: 0.8rem; color: #aaa; }
-    .movie-info button { margin-top: 0.5rem; width: 100%; background: #4f46e5; color: #fff; cursor: pointer; }
+    body { margin:0; font-family: Arial, sans-serif; background:#111; color:#eee; }
+    header { background:linear-gradient(to right,#4f46e5,#ec4899); padding:1rem; text-align:center; }
+    h1 { margin:0; font-size:1.8rem; }
+    main { max-width:1000px; margin:2rem auto; padding:0 1rem; }
+    .search { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem; }
+    input, select, button { padding:0.5rem; border-radius:5px; border:none; }
+    .movies { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:1rem; }
+    .movie { background:#222; border-radius:8px; overflow:hidden; }
+    .movie img { width:100%; height:250px; object-fit:cover; }
+    .movie-info { padding:0.5rem; }
+    .movie-info h3 { margin:0; font-size:1rem; }
+    .movie-info p { margin:0.2rem 0; font-size:0.8rem; color:#aaa; }
+    .movie-info button { margin-top:0.5rem; width:100%; background:#4f46e5; color:white; cursor:pointer; }
     /* Modal */
-    .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; }
-    .modal.active { display: flex; }
-    .modal-content { background: #111; padding: 1rem; border-radius: 8px; max-width: 800px; width: 90%; }
-    .modal-content video, .modal-content iframe { width: 100%; height: 450px; }
-    .close-btn { background: #ec4899; border: none; color: #fff; padding: 0.3rem 0.6rem; cursor: pointer; float: right; }
+    .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; 
+             background:rgba(0,0,0,0.8); justify-content:center; align-items:center; }
+    .modal.active { display:flex; }
+    .modal-content { background:#111; padding:1rem; border-radius:8px; max-width:800px; width:90%; }
+    .modal-content video, .modal-content iframe { width:100%; height:450px; }
+    .close-btn { background:#ec4899; border:none; color:#fff; padding:0.3rem 0.6rem; cursor:pointer; float:right; }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Breakpoint</h1>
-  </header>
 
-  <main>
-    <div class="search">
-      <input type="text" id="searchInput" placeholder="ค้นหาหนัง...">
-      <select id="tagSelect">
-        <option value="">ทุกประเภท</option>
-      </select>
-      <button onclick="clearFilters()">ล้าง</button>
-    </div>
+<header>
+  <h1>Breakpoint</h1>
+</header>
 
-    <div class="movies" id="movieGrid"></div>
-  </main>
-
-  <div class="modal" id="movieModal">
-    <div class="modal-content">
-      <button class="close-btn" onclick="closeModal()">X</button>
-      <div id="modalTitle" style="font-weight:bold; margin-bottom:0.5rem;"></div>
-      <div id="modalPlayer"></div>
-    </div>
+<main>
+  <div class="search">
+    <input type="text" id="searchInput" placeholder="ค้นหาหนัง...">
+    <select id="tagSelect">
+      <option value="">ทุกประเภท</option>
+    </select>
+    <button onclick="clearFilters()">ล้าง</button>
   </div>
 
-  <script>
-    const movies = [
-      { title:'Breakpoint ตอนที่1', year:2025, tags:['Action','สงครามส่งด่วน'], type:'file', src:'bp1.mp4', poster:'bp1.jpg' },
-      { title:'Breakpoint ตอนที่2', year:2025, tags:['Action','สงครามส่งด่วน'], type:'file', src:'https://drive.google.com/file/d/1qq4ITXatn9NwlZXVSGQGGy3HruISSy-K/preview', poster:'bp2.jpg' },
-      
-    ];
+  <div class="movies" id="movieGrid"></div>
+</main>
 
-    const movieGrid = document.getElementById('movieGrid');
-    const tagSelect = document.getElementById('tagSelect');
-    const searchInput = document.getElementById('searchInput');
-    const modal = document.getElementById('movieModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalPlayer = document.getElementById('modalPlayer');
+<div class="modal" id="movieModal">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closeModal()">X</button>
+    <div id="modalTitle" style="font-weight:bold; margin-bottom:0.5rem;"></div>
+    <div id="modalPlayer"></div>
+  </div>
+</div>
 
-    // Populate tags
-    const tags = [...new Set(movies.flatMap(m=>m.tags))];
-    tags.forEach(tag => {
-      const opt = document.createElement('option');
-      opt.value = tag;
-      opt.textContent = tag;
-      tagSelect.appendChild(opt);
+<script>
+  const movies = [
+    { 
+      title:'Breakpoint ตอนที่1', 
+      year:2025, 
+      tags:['Action','สงครามส่งด่วน'], 
+      type:'file', 
+      src:'bp1.mp4', 
+      poster:'bp1.jpg' 
+    },
+    { 
+      title:'Breakpoint ตอนที่2', 
+      year:2025, 
+      tags:['Action','สงครามส่งด่วน'], 
+      type:'gdrive',
+      src:'https://drive.google.com/file/d/1qq4ITXatn9NwlZXVSGQGGy3HruISSy-K/preview',
+      poster:'bp2.jpg'
+    }
+  ];
+
+  const movieGrid = document.getElementById('movieGrid');
+  const tagSelect = document.getElementById('tagSelect');
+  const searchInput = document.getElementById('searchInput');
+  const modal = document.getElementById('movieModal');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalPlayer = document.getElementById('modalPlayer');
+
+  // Populate tags
+  const tags = [...new Set(movies.flatMap(m => m.tags))];
+  tags.forEach(tag => {
+    const opt = document.createElement('option');
+    opt.value = tag;
+    opt.textContent = tag;
+    tagSelect.appendChild(opt);
+  });
+
+  function displayMovies() {
+    movieGrid.innerHTML = '';
+    const query = searchInput.value.toLowerCase();
+    const selectedTag = tagSelect.value;
+
+    const filtered = movies.filter(m => {
+      return (!query || m.title.toLowerCase().includes(query)) &&
+             (!selectedTag || m.tags.includes(selectedTag));
     });
 
-    function displayMovies() {
-      movieGrid.innerHTML = '';
-      const query = searchInput.value.toLowerCase();
-      const selectedTag = tagSelect.value;
-      const filtered = movies.filter(m => {
-        return (!query || m.title.toLowerCase().includes(query)) && (!selectedTag || m.tags.includes(selectedTag));
-      });
+    filtered.forEach(m => {
+      const div = document.createElement('div');
+      div.className = 'movie';
+      div.innerHTML = `
+        <img src='${m.poster}' alt='${m.title}'>
+        <div class='movie-info'>
+          <h3>${m.title}</h3>
+          <p>${m.year} · ${m.tags.join(', ')}</p>
+          <button onclick='playMovie(${movies.indexOf(m)})'>เล่น</button>
+        </div>
+      `;
+      movieGrid.appendChild(div);
+    });
+  }
 
-      filtered.forEach(m => {
-        const div = document.createElement('div');
-        div.className = 'movie';
-        div.innerHTML = `
-          <img src='${m.poster}' alt='${m.title}'>
-          <div class='movie-info'>
-            <h3>${m.title}</h3>
-            <p>${m.year} · ${m.tags.join(', ')}</p>
-            <button onclick='playMovie(${movies.indexOf(m)})'>เล่น</button>
-          </div>
-        `;
-        movieGrid.appendChild(div);
-      });
+  function playMovie(index) {
+    const m = movies[index];
+    modalTitle.textContent = m.title;
+
+    if (m.type === 'file') {
+      modalPlayer.innerHTML = `<video controls autoplay src='${m.src}' poster='${m.poster}'></video>`;
+    } 
+    else if (m.type === 'youtube') {
+      modalPlayer.innerHTML = `<iframe src='${m.src}' frameborder='0' allowfullscreen></iframe>`;
+    }
+    else if (m.type === 'gdrive') {
+      modalPlayer.innerHTML = `<iframe src='${m.src}' frameborder='0' allow='autoplay'></iframe>`;
     }
 
-    function playMovie(index) {
-      const m = movies[index];
-      modalTitle.textContent = m.title;
-      if (m.type === 'file') {
-        modalPlayer.innerHTML = `<video controls autoplay src='${m.src}' poster='${m.poster}'></video>`;
-      } else if (m.type === 'youtube') {
-        modalPlayer.innerHTML = `<iframe src='${m.src}' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture' allowfullscreen></iframe>`;
-      }
-      modal.classList.add('active');
-    }
+    modal.classList.add('active');
+  }
 
-    function closeModal() {
-      modal.classList.remove('active');
-      modalPlayer.innerHTML = '';
-    }
+  function closeModal() {
+    modal.classList.remove('active');
+    modalPlayer.innerHTML = '';
+  }
 
-    function clearFilters() {
-      searchInput.value = '';
-      tagSelect.value = '';
-      displayMovies();
-    }
-
-    searchInput.addEventListener('input', displayMovies);
-    tagSelect.addEventListener('change', displayMovies);
-
+  function clearFilters() {
+    searchInput.value = '';
+    tagSelect.value = '';
     displayMovies();
-  </script>
+  }
+
+  searchInput.addEventListener('input', displayMovies);
+  tagSelect.addEventListener('change', displayMovies);
+
+  displayMovies();
+</script>
+
 </body>
 </html>
-
-
