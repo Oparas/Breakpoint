@@ -55,30 +55,67 @@
 
 <script>
   const movies = [
-    { 
-      title:'Breakpoint ตอนที่1', 
-      year:2025, 
-      tags:['Action','สงครามส่งด่วน'], 
-      type:'file', 
-      src:'bp1.mp4', 
-      poster:'bp1.jpg' 
-    },
-    { 
-      title:'Breakpoint ตอนที่2', 
-      year:2025, 
-      tags:['Action','สงครามส่งด่วน'], 
-      type:'gdrive',
-      src:'https://drive.google.com/file/d/1qq4ITXatn9NwlZXVSGQGGy3HruISSy-K/preview',
-      poster:'bp2.jpg'
-    }
-  ];
+  { 
+    title:'Breakpoint ตอนที่1', 
+    year:2025, 
+    tags:['Action','สงครามส่งด่วน'], 
+    type:'file', 
+    src:'bp1.mp4', 
+    poster:'bp1.jpg' 
+  },
+  { 
+    title:'Breakpoint ตอนที่2', 
+    year:2025, 
+    tags:['Action','สงครามส่งด่วน'], 
+    type:'gdrive',
+    src:'https://drive.google.com/file/d/1qq4ITXatn9NwlZXVSGQGGy3HruISSy-K/preview',
+    poster:'bp2.jpg'
+  },
+  { 
+    title:'Breakpoint ตอนที่3', 
+    year:2025, 
+    tags:['Action','สงครามส่งด่วน'], 
+    type:'file', // หรือ 'youtube', 'gdrive' ก็ได้ถ้ามีลิงก์
+    src:'bp3.mp4', 
+    poster:'bp3.jpg',
+    release: '2025-11-23' // วันที่ออกฉาย
+  }
+];
 
-  const movieGrid = document.getElementById('movieGrid');
-  const tagSelect = document.getElementById('tagSelect');
-  const searchInput = document.getElementById('searchInput');
-  const modal = document.getElementById('movieModal');
-  const modalTitle = document.getElementById('modalTitle');
-  const modalPlayer = document.getElementById('modalPlayer');
+function displayMovies() {
+  movieGrid.innerHTML = '';
+  const query = searchInput.value.toLowerCase();
+  const selectedTag = tagSelect.value;
+
+  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+
+  const filtered = movies.filter(m => {
+    return (!query || m.title.toLowerCase().includes(query)) &&
+           (!selectedTag || m.tags.includes(selectedTag));
+  });
+
+  filtered.forEach(m => {
+    const div = document.createElement('div');
+    div.className = 'movie';
+
+    let buttonHTML = '';
+    if (m.release && m.release > today) {
+      buttonHTML = `<button disabled style="background:#555;">ออกฉาย ${m.release}</button>`;
+    } else {
+      buttonHTML = `<button onclick='playMovie(${movies.indexOf(m)})'>เล่น</button>`;
+    }
+
+    div.innerHTML = `
+      <img src='${m.poster}' alt='${m.title}'>
+      <div class='movie-info'>
+        <h3>${m.title}</h3>
+        <p>${m.year} · ${m.tags.join(', ')}</p>
+        ${buttonHTML}
+      </div>
+    `;
+    movieGrid.appendChild(div);
+  });
+}
 
   // Populate tags
   const tags = [...new Set(movies.flatMap(m => m.tags))];
@@ -166,3 +203,4 @@
 
 </body>
 </html>
+
