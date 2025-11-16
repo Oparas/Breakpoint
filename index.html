@@ -119,13 +119,29 @@
     modalTitle.textContent = m.title;
 
     if (m.type === 'file') {
-      modalPlayer.innerHTML = `<video controls autoplay src='${m.src}' poster='${m.poster}'></video>`;
+      modalPlayer.innerHTML = `
+        <video controls autoplay src='${m.src}' poster='${m.poster}'></video>
+      `;
     } 
     else if (m.type === 'youtube') {
-      modalPlayer.innerHTML = `<iframe src='${m.src}' frameborder='0' allowfullscreen></iframe>`;
+      modalPlayer.innerHTML = `
+        <iframe 
+          src='${m.src}' 
+          frameborder='0' 
+          allowfullscreen
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen">
+        </iframe>
+      `;
     }
     else if (m.type === 'gdrive') {
-      modalPlayer.innerHTML = `<iframe src='${m.src}' frameborder='0' allow='autoplay'></iframe>`;
+      modalPlayer.innerHTML = `
+        <iframe 
+          src='${m.src}'
+          frameborder='0'
+          allowfullscreen
+          allow="fullscreen; autoplay">
+        </iframe>
+      `;
     }
 
     modal.classList.add('active');
