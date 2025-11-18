@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Breakpoint EP3 — รายละเอียด</title>
+  <style>
+    body{margin:0;font-family:Inter,Arial, sans-serif;background:#071022;color:#fff}
+    .wrap{max-width:900px;margin:36px auto;padding:18px}
+    .poster{width:100%;border-radius:12px;display:block}
+    .title{font-size:2rem;margin-top:12px}
+    .meta{color:#9aa4b2;margin-top:6px}
+    .desc{margin-top:12px;line-height:1.6}
+    .count{display:inline-block;background:#ffd24d;color:#000;padding:8px 12px;border-radius:999px;font-weight:700;margin-top:12px}
+    .btn{display:inline-block;margin-top:16px;padding:12px 18px;border-radius:10px;border:0;cursor:pointer}
+    .btn.play{background:linear-gradient(90deg,#4f46e5,#ec4899);color:white}
+    .btn.disabled{background:#444;color:#bbb;cursor:not-allowed}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a href="index.html" style="color:#9aa4b2">← กลับหน้าหลัก</a>
+    <img src="bp3.jpg" alt="EP3 Poster" class="poster" />
+    <div class="title">Breakpoint ตอนที่3</div>
+    <div class="meta">2025 · Action · ⭐ 4.8</div>
+    <div id="countdown" class="count"></div>
+    <div class="desc" id="desc">EP3 ปูบทสู่การต่อสู้ครั้งใหญ่ — เรื่องย่อสั้น ๆ วางไว้ตรงนี้...</div>
+
+    <div id="actionArea">
+      <button id="playBtn" class="btn play">เล่น</button>
+    </div>
+  </div>
+
+<script>
+  // Release date (YYYY-MM-DD)
+  const release = '2025-11-23';
+  const playBtn = document.getElementById('playBtn');
+  const countdown = document.getElementById('countdown');
+  const actionArea = document.getElementById('actionArea');
+
+  function updateCountdown(){
+    const now = new Date();
+    const target = new Date(release + 'T00:00:00');
+    const diff = target - now;
+    if(diff <= 0){
+      // Released
+      countdown.textContent = 'ตอนนี้ออกฉายแล้ว';
+      playBtn.classList.remove('disabled');
+      playBtn.onclick = ()=>{ openPlayer() };
+      // replace count with link to player or enable direct player
+      return;
+    }
+    const d = Math.floor(diff / (1000*60*60*24));
+    const h = Math.floor((diff / (1000*60*60)) % 24);
+    const m = Math.floor((diff / (1000*60)) % 60);
+    const s = Math.floor((diff / 1000) % 60);
+    countdown.textContent = `ออกฉายใน ${d} วัน ${h} ชั่วโมง ${m} นาที ${s} วินาที`;
+    playBtn.classList.add('disabled');
+    playBtn.onclick = null;
+  }
+
+  function openPlayer(){
+    // เปิดในหน้าใหม่แบบ fullscreen-friendly หรือแสดง modal
+    // ถ้าใช้ไฟล์ mp4 ในเครื่อง:
+    const w = window.open('', '_blank');
+    w.document.write(`
+      <html><head><title>${document.title} — Player</title></head>
+      <body style="margin:0;background:#000;display:flex;align-items:center;justify-content:center;height:100vh">
+      <video controls autoplay style="width:100%;height:100%;object-fit:contain" src="bp3.mp4"></video>
+      </body></html>
+    `);
+    w.document.close();
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+</script>
+</body>
+</html>
