@@ -11,7 +11,6 @@
     header{padding:18px;background:linear-gradient(90deg,var(--accent),var(--accent2));display:flex;align-items:center;gap:12px}
     header h1{margin:0;font-size:1.4rem}
     .container{max-width:1100px;margin:24px auto;padding:0 16px}
-    /* Slider */
     .slider{position:relative;height:220px;border-radius:12px;overflow:hidden;background:#08101a;margin-bottom:18px}
     .slides{display:flex;height:100%;transition:transform .6s ease}
     .slide{min-width:100%;padding:20px;display:flex;gap:20px;align-items:center}
@@ -22,12 +21,10 @@
     .slider-controls{position:absolute;left:12px;right:12px;bottom:12px;display:flex;justify-content:center;gap:8px}
     .dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.15);cursor:pointer}
     .dot.active{background:#fff}
-    /* Search / filters */
     .filters{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
     input,select,button{padding:10px;border-radius:8px;border:0;font-size:14px}
     input{flex:1;min-width:160px}
     button.primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
-    /* Grid */
     .movies{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
     .card{background:var(--card);border-radius:10px;overflow:hidden;transition:transform .18s,box-shadow .18s}
     .card:hover{transform:translateY(-6px);box-shadow:0 10px 30px rgba(0,0,0,.6)}
@@ -40,15 +37,12 @@
     .btn.watch{background:var(--accent);color:#fff}
     .btn.disabled{background:#444;color:#aaa;cursor:not-allowed}
     .small{font-size:13px;color:var(--muted)}
-    /* Modal */
     .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6);z-index:60;padding:20px}
     .modal.active{display:flex}
     .modal-card{background:#071020;width:100%;max-width:900px;border-radius:10px;overflow:hidden;position:relative}
     .modal-content{padding:12px}
     .close{position:absolute;right:12px;top:12px;background:var(--accent2);border:0;color:#000;padding:8px;border-radius:8px;cursor:pointer}
-    /* watchlist badge */
     .watch-badge{background:#ffd24d;color:#000;padding:6px 8px;border-radius:999px;font-weight:600}
-    /* responsive */
     @media (max-width:700px){ .slide img{display:none}.poster{height:180px} }
   </style>
 </head>
@@ -61,43 +55,35 @@
   </header>
 
   <div class="container">
-    <!-- Slider -->
     <div class="slider" id="hero">
       <div class="slides" id="slides"></div>
       <div class="slider-controls" id="dots"></div>
     </div>
 
-    <!-- Filters -->
     <div class="filters">
       <input id="q" placeholder="ค้นหาชื่อหนังหรือตอน..." />
       <select id="tagFilter"><option value="">ทุกประเภท</option></select>
       <button class="primary" onclick="clearFilters()">ล้าง</button>
     </div>
 
-    <!-- Movies grid -->
     <div class="movies" id="movieGrid"></div>
   </div>
 
-  <!-- Modal player / detail -->
   <div id="modal" class="modal" onclick="modalOutside(event)">
     <div class="modal-card" role="dialog" aria-modal="true" onclick="event.stopPropagation()">
       <button class="close" onclick="closeModal()">X</button>
-      <div id="modalPlayerWrap">
-        <!-- dynamic inserted player -->
-      </div>
+      <div id="modalPlayerWrap"></div>
       <div class="modal-content" id="modalMeta"></div>
     </div>
   </div>
 
 <script>
-/* ====== Data ====== */
 const movies = [
   { id:1, title:'Breakpoint ตอนที่1', year:2025, tags:['Action','สงครามส่งด่วน'], type:'file', src:'bp1.mp4', poster:'bp1.jpg', rating:4.3, desc:'ตอนเปิดเรื่อง ยานส่งด่วนชนิดพิเศษถูกจารกรรม...'},
-  { id:2, title:'Breakpoint ตอนที่2', year:2025, tags:['Action','สงครามส่งด่วน'], type:'gdrive', src:'https://drive.google.com/file/d/1qq4ITXatn9NwlZXVSGQGGy3HruISSy-K/preview', poster:'bp2.jpg', rating:4.6, desc:'ความตึงเครียดเพิ่มขึ้นเมื่อทีมต้องเผชิญ...' },
-  { id:3, title:'Breakpoint ตอนที่3', year:2025, tags:['Action','สงครามส่งด่วน'], type:'file', src:'bp3.mp4', poster:'bp3.jpg', rating:4.8, desc:'EP3 ปูบทสู่การต่อสู้ครั้งใหญ่', release:'2025-11-23' }
+  { id:2, title:'Breakpoint ตอนที่2', year:2025, tags:['Action','สงครามส่งด่วน'], type:'file', src:'bp1.mp4', poster:'bp2.jpg', rating:4.6, desc:'ความตึงเครียดเพิ่มขึ้นเมื่อทีมต้องเผชิญ...' },
+  { id:3, title:'Breakpoint ตอนที่3', year:2025, tags:['Action','สงครามส่งด่วน'], type:'file', src:'bp1.mp4', poster:'bp3.jpg', rating:4.8, desc:'EP3 ปูบทสู่การต่อสู้ครั้งใหญ่', release:'2025-11-23' }
 ];
 
-/* ====== UI refs ====== */
 const slidesEl = document.getElementById('slides');
 const dotsEl = document.getElementById('dots');
 const movieGrid = document.getElementById('movieGrid');
@@ -108,6 +94,33 @@ const modalPlayerWrap = document.getElementById('modalPlayerWrap');
 const modalMeta = document.getElementById('modalMeta');
 const watchlistCount = document.getElementById('watchlistCount');
 
-/* ====== Watchlist (localStorage) ====== */
 function loadWatchlist(){ try{return JSON.parse(localStorage.getItem('watchlist')||'[]')}catch(e){return []} }
-function saveWatchlist(list){ localStorage.setItem('
+function saveWatchlist(list){ localStorage.setItem('watchlist',JSON.stringify(list)); updateWatchBadge(); }
+function toggleWatch(id){ let list = loadWatchlist(); if(list.includes(id)){ list=list.filter(x=>x!==id) } else { list.push(id) } saveWatchlist(list); renderMovies(); }
+function updateWatchBadge(){ watchlistCount.textContent = loadWatchlist().length }
+
+let slideIndex = 0;
+function renderSlider(){ slidesEl.innerHTML=''; dotsEl.innerHTML=''; const hero=movies.slice(0,3); hero.forEach((m,i)=>{ const s=document.createElement('div'); s.className='slide'; s.innerHTML=`<img src='${m.poster}' alt=''><div class='meta'><h2>${m.title}</h2><p class='small'>${m.desc}</p><p style='margin-top:10px'><button class='btn watch' onclick='goDetail(${m.id})'>ดูรายละเอียด</button></p></div>`; slidesEl.appendChild(s); const d=document.createElement('div'); d.className='dot'+(i===0?' active':''); d.onclick=()=>{goSlide(i)}; dotsEl.appendChild(d); }); }
+function goSlide(i){ slideIndex=i; updateSlide(); }
+function updateSlide(){ slidesEl.style.transform=`translateX(-${slideIndex*100}%)`; Array.from(dotsEl.children).forEach((d,idx)=>d.classList.toggle('active',idx===slideIndex)); }
+setInterval(()=>{ slideIndex=(slideIndex+1)%Math.min(3,movies.length); updateSlide() },5000);
+
+function renderTags(){ const tags=[...new Set(movies.flatMap(m=>m.tags))]; tags.forEach(t=>{ const o=document.createElement('option'); o.value=t; o.textContent=t; tagFilter.appendChild(o); }); }
+
+function todayISO(){ return new Date().toISOString().split('T')[0] }
+function renderMovies(){ movieGrid.innerHTML=''; const query=q.value.toLowerCase().trim(); const tag=tagFilter.value; const filter=movies.filter(m=>{ if(query && !(m.title.toLowerCase().includes(query) || (m.desc && m.desc.toLowerCase().includes(query)))) return false; if(tag && !m.tags.includes(tag)) return false; return true; }); filter.forEach(m=>{ const card=document.createElement('div'); card.className='card'; const isOut=m.release && m.release>todayISO(); const watchlist=loadWatchlist().includes(m.id); card.innerHTML=`<img class='poster' src='${m.poster}' alt='${m.title}'><div class='card-body'><div class='title'>${m.title}</div><div class='meta'>${m.year} · ${m.tags.join(', ')} · ⭐ ${m.rating}</div><div class='btn-row'>${isOut?`<button class='btn disabled'>ออกฉาย ${m.release}</button>`:`<button class='btn watch' onclick='playMovie(${m.id})'>เล่น</button>`}<button class='btn' onclick='toggleWatch(${m.id})'>${watchlist?'ลบจาก Watchlist':'เพิ่ม Watchlist'}</button></div><div style='margin-top:8px' class='small'>แนะนำจากแท็ก: ${recommendFrom(m).map(x=>x.title).slice(0,2).join(' · ')||'-'}</div></div>`; movieGrid.appendChild(card); }); updateWatchBadge(); }
+function recommendFrom(m){ return movies.filter(x=>x.id!==m.id && x.tags.some(t=>m.tags.includes(t))).sort((a,b)=>b.rating-a.rating); }
+function findById(id){ return movies.find(m=>m.id===id) }
+
+function playMovie(id){ const m=findById(id); if(!m) return; modalPlayerWrap.innerHTML=`<video controls autoplay src='${m.src}' poster='${m.poster}' style='width:100%;height:520px;object-fit:contain'></video>`; modalMeta.innerHTML=`<div style='padding:12px'><h3>${m.title}</h3><p class='small'>${m.year} · ${m.tags.join(', ')} · ⭐ ${m.rating}</p><p style='margin-top:8px'>${m.desc}</p><p style='margin-top:8px'><a href='ep3.html' style='color:#ffd24d'>ไปหน้ารายละเอียด</a></p></div>`; modal.classList.add('active'); document.addEventListener('keydown', escClose); }
+function goDetail(id){ const m=findById(id); if(m && m.id===3){ location.href='ep3.html'; } else { playMovie(id); } }
+function closeModal(){ modal.classList.remove('active'); modalPlayerWrap.innerHTML=''; modalMeta.innerHTML=''; document.removeEventListener('keydown', escClose); }
+function modalOutside(e){ if(e.target===modal) closeModal(); }
+function escClose(e){ if(e.key==='Escape') closeModal(); }
+
+renderSlider(); renderTags(); renderMovies(); updateWatchBadge();
+q.addEventListener('input', renderMovies); tagFilter.addEventListener('change', renderMovies);
+window.playMovie=playMovie; window.toggleWatch=toggleWatch; window.goDetail=goDetail; window.clearFilters=()=>{ q.value=''; tagFilter.value=''; renderMovies(); }
+</script>
+</body>
+</html>
